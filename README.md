@@ -2,7 +2,13 @@
 
 convert pytorch model to tflite model
 
-# example
+## Install
+
+```bash
+python -m pip install -e . 
+```
+
+## example
 
 create .tflite from pytorch model
 
