@@ -31,3 +31,23 @@ def convert2tflite(model, dummy_input, tflite_path):
     with open(tflite_path, 'wb') as f:
         f.write(tflite_model)
 
+
+def infer_tflite(tflitepath, input_data):
+    interpreter = tf.lite.Interpreter(model_path="alexnet.tflite")
+    # allocate memory
+    interpreter.allocate_tensors()
+    
+    # get model input and output propaty
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    ## get input shape
+    #input_shape = input_details[0]['shape']
+
+    # set tensor pointer to index
+    interpreter.set_tensor(input_details[0]['index'], input_data)
+    
+    # execute infer
+    interpreter.invoke()
+    # get result from index of output_details
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+    return output_data
