@@ -17,7 +17,6 @@ def convert2tflite(model, dummy_input, tflite_path):
     onnx_model = onnx.load('./tmp.onnx')
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
-    print('kkkk--',onnx_input_names)
 
     os.system(f'onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}')
 
