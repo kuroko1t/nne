@@ -1,6 +1,6 @@
 # torch2tflite
 
-convert pytorch model to tflite model
+convert pytorch model to tflite model 
 
 ## Install
 
@@ -21,4 +21,16 @@ model = torchvision.models.alexnet(pretrained=True).cuda()
 dummy_input = torch.randn(10, 3, 224, 224, device='cuda')
 
 torch2tflite.convert2tflite(model , dummy_input, 'alexnet.tflite')
+```
+
+create .tflite(quantize) for edge tpu
+
+```python3
+input_shape = (10, 3, 112, 112)
+model = torchvision.models.mobilenet_v2(pretrained=True)
+dummy_input = torch.randn(input_shape, device='cpu')
+
+tflite_file = 'mobilenet.tflite'
+
+torch2tflite.convert2tflite(model , dummy_input, tflite_file, edgetpu=True)
 ```
