@@ -32,8 +32,8 @@ def convert2tflite(model, dummy_input, tflite_path, edgetpu=False):
     )
     if edgetpu:
         def representative_dataset_gen():
-        for input_value in my_ds.take(10):
-            yield [input_value]
+            for input_value in my_ds.take(10):
+                yield [input_value]
         converter.representative_dataset = representative_dataset_gen
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         converter.inference_input_type = tf.int8
