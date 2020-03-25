@@ -33,7 +33,6 @@ def convert2tflite(model, dummy_input, tflite_path, edgetpu=False):
     if edgetpu:
         def representative_dataset_gen():
             for input_value in my_ds.take(10):
-                print(input_value.shape)
                 yield [input_value]
         converter.representative_dataset = representative_dataset_gen
         converter.allow_custom_ops = True
