@@ -46,7 +46,7 @@ def convert2tflite(model, dummy_input, tflite_path, edgetpu=False):
         f.write(tflite_model)
 
 def infer_tflite(tflitepath, input_data):
-    interpreter = tf.lite.Interpreter(model_path="alexnet.tflite")
+    interpreter = tf.lite.Interpreter(model_path=tflitepath)
     # allocate memory
     interpreter.allocate_tensors()
 
