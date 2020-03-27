@@ -34,3 +34,14 @@ tflite_file = 'mobilenet.tflite'
 
 torch2tflite.convert2tflite(model , dummy_input, tflite_file, edgetpu=True)
 ```
+
+
+## Support Format
+
+|format  | support  |
+|---|---|
+| tflite  |  :white_check_mark: |
+| edge tpu  | trial  |
+| onnx||
+| tensorRT||
+
