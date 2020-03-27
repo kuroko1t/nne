@@ -1,6 +1,7 @@
 # torch2tflite
 
 convert pytorch model to tflite model 
+Please feel free to issue and PR.
 
 ## Install
 
