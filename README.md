@@ -46,3 +46,5 @@ torch2tflite.convert2tflite(model , dummy_input, tflite_file, edgetpu=True)
 | onnx||
 | tensorRT||
 
+## License
+MIT
