@@ -1,9 +1,8 @@
-# nne
-
 <p align="center"><img width="40%" src="docs/logo.png" /></p>
 
 convert pytorch model for Edge Device
 
+# nne
 contents
 
 - [Install](#install)
