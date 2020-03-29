@@ -3,7 +3,6 @@
 <p align="center"><img width="40%" src="docs/logo.png" /></p>
 
 convert pytorch model for Edge Device
-Please feel free to issue and PR.
 
 contents
 
@@ -42,13 +41,18 @@ nne.cv2onnx(model , dummy_input, onnx_file)
 ### tflite
 
 ```python3
-input_shape = (10, 3, 112, 112)
-model = torchvision.models.mobilenet_v2(pretrained=True)
-dummy_input = torch.randn(input_shape, device='cpu')
+import torchvision
+import torch
+import numpy as np
+import nne
+
+input_shape = (10, 3, 224, 224)
+model = torchvision.models.mobilenet_v2(pretrained=True).cuda()
+dummy_input = torch.randn(input_shape, device='cuda')
 
 tflite_file = 'mobilenet.tflite'
 
-torch2tflite.convert2tflite(model , dummy_input, tflite_file, edgetpu=True)
+nne.cv2tflite(model , dummy_input, tflite_file)
 ```
 
 ### tflite(edgetpu)
