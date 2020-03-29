@@ -62,7 +62,7 @@ def cv2tflite(model, dummy_input, tflite_path, edgetpu=False):
 
     if edgetpu:
         os.system(f'edgetpu_compiler {tflite_path}')
-    
+
 def cv2onnx(model, dummy_input, onnx_file):
     """
     convert torch model to tflite model using onnx

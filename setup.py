@@ -11,7 +11,7 @@ def get_requires():
     else:
         requires += ['onnxruntime']
     return requires
-        
+
 setup(
     name='nne',
     packages=find_packages(),
