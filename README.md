@@ -24,7 +24,11 @@ If you want to compile pytorch model for edgetpu, [install edgetpu_compiler](htt
 
 ## Example
 
+example compile pytorch model for edge device.
+
 ### onnx
+
+comvert to onnx model
 
 ```python3
 import nne
@@ -41,6 +45,8 @@ nne.cv2onnx(model, input_shape, onnx_file)
 
 ### tflite
 
+comvert to tflite model
+
 ```python3
 import torchvision
 import torch
@@ -56,6 +62,8 @@ nne.cv2tflite(model, input_shape, tflite_file)
 ```
 
 ### tflite(edgetpu)
+
+comvert to tflite model(edge tpu)
 
 ```python3
 import torchvision
