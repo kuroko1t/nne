@@ -11,11 +11,13 @@ contents
   - [onnx](#onnx)
   - [tflite](#tflite)
   - [tflite(edgetpu)](#tflite-edgetpu)
+- [Support Format](#Support-Format)
+- [Linse](#License)
 
 ## Install
 
 ```bash
-python -m pip install -e . 
+python -m pip install -e .
 ```
 
 If you want to compile pytorch model for edgetpu, [install edgetpu_compiler](https://coral.ai/docs/edgetpu/compiler/)
