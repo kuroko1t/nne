@@ -1,7 +1,17 @@
-# torch2tflite
+# nne
 
-convert pytorch model to tflite model  
+<p align="center"><img width="40%" src="docs/logo.png" /></p>
+
+convert pytorch model for Edge Device
 Please feel free to issue and PR.
+
+contents
+
+- [Install](#install)
+- [Example](#Example)
+  - [onnx](#onnx)
+  - [tflite](#tflite)
+  - [tflite(edgetpu)](#tflite-edgetpu)
 
 ## Install
 
@@ -9,22 +19,27 @@ Please feel free to issue and PR.
 python -m pip install -e . 
 ```
 
-## example
+If you want to compile pytorch model for edgetpu, install edgetpu_compiler [ref](https://coral.ai/docs/edgetpu/compiler/)
 
-create .tflite from pytorch model
+## Example
+
+### onnx
 
 ```python3
-import torch2tflite
+import nne
 import torchvision
 import torch
+import numpy as np
 
-model = torchvision.models.alexnet(pretrained=True).cuda()
-dummy_input = torch.randn(10, 3, 224, 224, device='cuda')
+input_shape = (1, 3, 64, 64)
+onnx_file = 'resnet.onnx'
+model = torchvision.models.resnet34(pretrained=True).cuda()
+dummy_input = torch.randn(input_shape, device='cuda')
 
-torch2tflite.convert2tflite(model , dummy_input, 'alexnet.tflite')
+nne.cv2onnx(model , dummy_input, onnx_file)
 ```
 
-create .tflite(quantize) for edge tpu
+### tflite
 
 ```python3
 input_shape = (10, 3, 112, 112)
@@ -36,14 +51,30 @@ tflite_file = 'mobilenet.tflite'
 torch2tflite.convert2tflite(model , dummy_input, tflite_file, edgetpu=True)
 ```
 
+### tflite(edgetpu)
+
+```python3
+import torchvision
+import torch
+import numpy as np
+import nne
+
+input_shape = (10, 3, 112, 112)
+model = torchvision.models.mobilenet_v2(pretrained=True)
+dummy_input = torch.randn(input_shape, device='cpu')
+
+tflite_file = 'mobilenet.tflite'
+
+nne.cv2tflite(model , dummy_input, tflite_file, edgetpu=True)
+```
 
 ## Support Format
 
 |format  | support  |
 |---|---|
-| tflite  |  :white_check_mark: |
+| tflite  | :white_check_mark: |
 | edge tpu  | trial  |
-| onnx||
+| onnx| :white_check_mark: |
 | tensorRT||
 
 ## License

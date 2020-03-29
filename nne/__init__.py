@@ -2,18 +2,18 @@ import torch
 import onnx
 import onnx_tf
 from onnx_tf.backend import prepare
+import onnxruntime
 import tensorflow as tf
 import os
+import re
 
-#tf.enable_eager_execution()
-
-def convert2tflite(model, dummy_input, tflite_path, edgetpu=False):
+def cv2tflite(model, dummy_input, tflite_path, edgetpu=False):
     """
     convert torch model to tflite model using onnx
     """
     tmp_onnx_path = 'tmp.onnx'
     tmp_pb_path = 'tmp.pb'
-    torch.onnx.export(model, dummy_input, tmp_onnx_path, verbose=True,
+    torch.onnx.export(model, dummy_input, tmp_onnx_path,
                       input_names=[ "dummy_inputs" ] , output_names=['dummy_outputs'])
 
     onnx_model = onnx.load('./tmp.onnx')
@@ -22,7 +22,12 @@ def convert2tflite(model, dummy_input, tflite_path, edgetpu=False):
 
     os.system(f'onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}')
 
-    train = tf.convert_to_tensor(dummy_input.numpy())
+    input_data = ''
+    if dummy_input.is_cuda:
+        input_data = dummy_input.cpu().numpy()
+    else:
+        input_data = dummy_input.numpy()
+    train = tf.convert_to_tensor(input_data)
     my_ds = tf.data.Dataset.from_tensor_slices((train)).batch(10)
 
     converter = tf.compat.v1.lite.TFLiteConverter.from_frozen_graph(
@@ -40,10 +45,47 @@ def convert2tflite(model, dummy_input, tflite_path, edgetpu=False):
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         converter.inference_input_type = tf.int8
         converter.inference_output_type = tf.int8
-    tflite_model = converter.convert()
+    try:
+        tflite_model = converter.convert()
+    except Exception as e:
+        if 'you will need custom implementations' in e.args[-1]:
+            converter.allow_custom_ops = True
+            tflite_model = converter.convert()
+        else:
+            print('[ERR]:', e)
 
     with open(tflite_path, 'wb') as f:
         f.write(tflite_model)
+    os.remove(tmp_onnx_path)
+    os.remove(tmp_pb_path)
+
+    if edgetpu:
+        os.system(f'edgetpu_compiler {tflite_path}')
+    
+def cv2onnx(model, dummy_input, onnx_file):
+    """
+    convert torch model to tflite model using onnx
+    """
+    try:
+        torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
+                          input_names=[ "dummy_inputs" ] , output_names=['dummy_outputs'])
+    except RuntimeError as e:
+        opset_version=11
+        if 'aten::upsample_bilinear2d' in e.args[0]:
+            operator_export_type = torch.onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK
+            torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
+                              input_names=[ "dummy_inputs" ] , output_names=['dummy_outputs'],
+                              operator_export_type=operator_export_type)
+        else:
+            print("[ERR]:",e)
+    except Exception as e:
+        print("[ERR]:", e)
+
+def infer_onnx(onnx_file, input_data):
+    ort_session = onnxruntime.InferenceSession(onnx_file)
+    ort_inputs = {ort_session.get_inputs()[0].name: input_data}
+    ort_outs = ort_session.run(None, ort_inputs)
+    return ort_outs[0]
 
 def infer_tflite(tflitepath, input_data):
     interpreter = tf.lite.Interpreter(model_path=tflitepath)
