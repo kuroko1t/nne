@@ -1,5 +1,5 @@
-import torch
 import onnx
+import torch
 import onnx_tf
 from onnx_tf.backend import prepare
 import onnxruntime
@@ -14,7 +14,8 @@ def cv2tflite(model, dummy_input, tflite_path, edgetpu=False):
     tmp_onnx_path = 'tmp.onnx'
     tmp_pb_path = 'tmp.pb'
     torch.onnx.export(model, dummy_input, tmp_onnx_path,
-                      input_names=[ "dummy_inputs" ] , output_names=['dummy_outputs'])
+                      do_constant_folding=True,
+                      input_names=[ "input" ] , output_names=['output'])
 
     onnx_model = onnx.load('./tmp.onnx')
     onnx_input_names = [input.name for input in onnx_model.graph.input]
@@ -67,15 +68,20 @@ def cv2onnx(model, dummy_input, onnx_file):
     convert torch model to tflite model using onnx
     """
     try:
-        torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
-                          input_names=[ "dummy_inputs" ] , output_names=['dummy_outputs'])
+        torch.onnx.export(model, dummy_input, onnx_file,
+                          do_constant_folding=True,
+                          input_names=[ "input" ] , output_names=['output'])
+        onnx_model = onnx.load(onnx_file)
+        onnx.checker.check_model(onnx_model)
     except RuntimeError as e:
         opset_version=11
         if 'aten::upsample_bilinear2d' in e.args[0]:
             operator_export_type = torch.onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK
             torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
-                              input_names=[ "dummy_inputs" ] , output_names=['dummy_outputs'],
+                              input_names=[ "input" ] , output_names=['output'],
                               operator_export_type=operator_export_type)
+            onnx_model = onnx.load(onnx_file)
+            onnx.checker.check_model(onnx_model)
         else:
             print("[ERR]:",e)
     except Exception as e:
