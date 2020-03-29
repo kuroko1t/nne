@@ -12,7 +12,7 @@ contents
   - [tflite](#tflite)
   - [tflite(edgetpu)](#tflite-edgetpu)
 - [Support Format](#Support-Format)
-- [Linse](#License)
+- [License](#License)
 
 ## Install
 
