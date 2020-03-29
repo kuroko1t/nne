@@ -7,10 +7,17 @@ import tensorflow as tf
 import os
 import re
 
-def cv2tflite(model, dummy_input, tflite_path, edgetpu=False):
+def check_model_is_cuda(model):
+    return next(model.parameters()).is_cuda
+
+def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     """
     convert torch model to tflite model using onnx
     """
+    if check_model_is_cuda(model):
+        dummy_input = torch.randn(input_shape, device='cuda')
+    else:
+        dummy_input = torch.randn(input_shape, device='cpu')
     tmp_onnx_path = 'tmp.onnx'
     tmp_pb_path = 'tmp.pb'
     torch.onnx.export(model, dummy_input, tmp_onnx_path,
@@ -63,10 +70,14 @@ def cv2tflite(model, dummy_input, tflite_path, edgetpu=False):
     if edgetpu:
         os.system(f'edgetpu_compiler {tflite_path}')
 
-def cv2onnx(model, dummy_input, onnx_file):
+def cv2onnx(model, input_shape, onnx_file):
     """
     convert torch model to tflite model using onnx
     """
+    if check_model_is_cuda(model):
+        dummy_input = torch.randn(input_shape, device='cuda')
+    else:
+        dummy_input = torch.randn(input_shape, device='cpu')
     try:
         torch.onnx.export(model, dummy_input, onnx_file,
                           do_constant_folding=True,

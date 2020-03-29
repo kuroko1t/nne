@@ -35,9 +35,8 @@ import numpy as np
 input_shape = (1, 3, 64, 64)
 onnx_file = 'resnet.onnx'
 model = torchvision.models.resnet34(pretrained=True).cuda()
-dummy_input = torch.randn(input_shape, device='cuda')
 
-nne.cv2onnx(model , dummy_input, onnx_file)
+nne.cv2onnx(model, input_shape, onnx_file)
 ```
 
 ### tflite
@@ -50,11 +49,10 @@ import nne
 
 input_shape = (10, 3, 224, 224)
 model = torchvision.models.mobilenet_v2(pretrained=True).cuda()
-dummy_input = torch.randn(input_shape, device='cuda')
 
 tflite_file = 'mobilenet.tflite'
 
-nne.cv2tflite(model , dummy_input, tflite_file)
+nne.cv2tflite(model, input_shape, tflite_file)
 ```
 
 ### tflite(edgetpu)
@@ -67,11 +65,10 @@ import nne
 
 input_shape = (10, 3, 112, 112)
 model = torchvision.models.mobilenet_v2(pretrained=True)
-dummy_input = torch.randn(input_shape, device='cpu')
 
 tflite_file = 'mobilenet.tflite'
 
-nne.cv2tflite(model , dummy_input, tflite_file, edgetpu=True)
+nne.cv2tflite(model, input_shape, tflite_file, edgetpu=True)
 ```
 
 ## Support Format

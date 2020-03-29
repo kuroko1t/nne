@@ -12,8 +12,7 @@ class TFliteTests(unittest.TestCase):
         input_shape = (1, 3, 64, 64)
         tflite_file = 'mobilenet.tflite'
         model = torchvision.models.mobilenet_v2(pretrained=True)
-        dummy_input = torch.randn(input_shape)
-        nne.cv2tflite(model , dummy_input, tflite_file)
+        nne.cv2tflite(model, input_shape, tflite_file)
 
         input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
         out_tflite = nne.infer_tflite(tflite_file, input_data)
