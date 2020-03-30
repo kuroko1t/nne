@@ -90,6 +90,7 @@ def cv2onnx(model, input_shape, onnx_file):
             operator_export_type = torch.onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK
             torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
                               input_names=[ "input" ] , output_names=['output'],
+                              opset_version = opset_version,
                               operator_export_type=operator_export_type)
             onnx_model = onnx.load(onnx_file)
             onnx.checker.check_model(onnx_model)
