@@ -6,6 +6,7 @@ import onnxruntime
 import tensorflow as tf
 import os
 import re
+from nne.benchmark import benchmark as bm
 
 def check_model_is_cuda(model):
     return next(model.parameters()).is_cuda
@@ -99,13 +100,16 @@ def cv2onnx(model, input_shape, onnx_file):
     except Exception as e:
         print("[ERR]:", e)
 
-def infer_onnx(onnx_file, input_data):
+def infer_onnx(onnx_file, input_data, benchmark=False):
     ort_session = onnxruntime.InferenceSession(onnx_file)
     ort_inputs = {ort_session.get_inputs()[0].name: input_data}
-    ort_outs = ort_session.run(None, ort_inputs)
+    if benchmark:
+        ort_outs = bm(ort_session.run)(None, ort_inputs)
+    else:
+        ort_outs = ort_session.run(None, ort_inputs)
     return ort_outs[0]
 
-def infer_tflite(tflitepath, input_data):
+def infer_tflite(tflitepath, input_data, benchmark=False):
     interpreter = tf.lite.Interpreter(model_path=tflitepath)
     # allocate memory
     interpreter.allocate_tensors()
@@ -116,11 +120,30 @@ def infer_tflite(tflitepath, input_data):
     ## get input shape
     #input_shape = input_details[0]['shape']
 
-    # set tensor pointer to index
-    interpreter.set_tensor(input_details[0]['index'], input_data)
-
-    # execute infer
-    interpreter.invoke()
-    # get result from index of output_details
-    output_data = interpreter.get_tensor(output_details[0]['index'])
+    def execute():
+        # set tensor pointer to index
+        interpreter.set_tensor(input_details[0]['index'], input_data)
+        # execute infer
+        interpreter.invoke()
+        # get result from index of output_details
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+        return output_data
+    if benchmark:
+        output_data = bm(execute)()
+    else:
+        output_data = execute()
     return output_data
+
+def infer_torch(model, input_data,  benchmark=False):
+    """
+    model : loaded model
+    input_data: numpy array
+    """
+    input_data = torch.from_numpy(input_data)
+    if check_model_is_cuda:
+        input_data = input_data.cuda()
+    if benchmark:
+        output = bm(model)(input_data)
+    else:
+        output = model(input_data)
+    return output.detach().cpu().numpy()
