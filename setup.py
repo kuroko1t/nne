@@ -1,11 +1,16 @@
 from setuptools import setup, find_packages
+import platform
 import torch
+
 
 def check_gpu_enable():
     return torch.cuda.is_available()
 
 def get_requires():
-    requires = ['onnx', 'tensorflow-cpu', 'tensorflow_addons', 'onnx_tf @ git+https://github.com/onnx/onnx-tensorflow', 'torchvision']
+    if platform.machine() == 'aarch64':
+        requires = ['onnx', 'torchvision']
+    else:
+        requires = ['onnx', 'tensorflow-cpu', 'tensorflow_addons', 'onnx_tf @ git+https://github.com/onnx/onnx-tensorflow', 'torchvision']
     if check_gpu_enable():
         requires += ['onnxruntime-gpu']
     else:

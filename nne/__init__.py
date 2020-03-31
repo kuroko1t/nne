@@ -1,9 +1,13 @@
 import onnx
 import torch
-import onnx_tf
-from onnx_tf.backend import prepare
-import onnxruntime
+try:
+    import onnx_tf
+    from onnx_tf.backend import prepare
+    import onnxruntime
+except:
+    pass
 import tensorflow as tf
+from torch2trt import torch2trt, TRTModule
 import os
 import re
 
@@ -99,12 +103,31 @@ def cv2onnx(model, input_shape, onnx_file):
     except Exception as e:
         print("[ERR]:", e)
 
+def cv2trt(model, input_shape, trt_file, fp16_mode=False):
+    """
+    convert torch model to tflite model using onnx
+    """
+    model.eval()
+    if check_model_is_cuda(model):
+        dummy_input = torch.randn(input_shape, device='cuda')
+    else:
+        dummy_input = torch.randn(input_shape, device='cpu')
+    model_trt = torch2trt(model, [dummy_input], fp16_mode=fp16_mode)
+    torch.save(model_trt.state_dict(), trt_file)
+
 def infer_onnx(onnx_file, input_data):
     ort_session = onnxruntime.InferenceSession(onnx_file)
     ort_inputs = {ort_session.get_inputs()[0].name: input_data}
     ort_outs = ort_session.run(None, ort_inputs)
     return ort_outs[0]
 
+def infer_trt(trt_file, input_data):
+    model_trt = TRTModule()
+    model_trt.load_state_dict(torch.load(trt_file))
+    input_data = torch.from_numpy(input_data).cuda()
+    output = model_trt(input_data)
+    return output.detach().cpu().numpy()
+    
 def infer_tflite(tflitepath, input_data):
     interpreter = tf.lite.Interpreter(model_path=tflitepath)
     # allocate memory
