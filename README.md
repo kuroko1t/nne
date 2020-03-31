@@ -10,6 +10,7 @@ contents
   - [onnx](#onnx)
   - [tflite](#tflite)
   - [tflite(edgetpu)](#tflite-edgetpu)
+  - [TensorRT](#tensorrt)
 - [Support Format](#Support-Format)
 - [License](#License)
 
@@ -78,6 +79,22 @@ tflite_file = 'mobilenet.tflite'
 nne.cv2tflite(model, input_shape, tflite_file, edgetpu=True)
 ```
 
+### TensorRT
+
+comvert to TensorRT
+
+```python3
+import nne
+import torchvision
+import torch
+import numpy as np
+
+input_shape = (1, 3, 224, 224)
+trt_file = 'alexnet_trt.pth'
+model = torchvision.models.alexnet(pretrained=True).cuda()
+nne.cv2trt(model, input_shape, trt_file)
+```
+
 ## Support Format
 
 |format  | support  |
@@ -85,7 +102,7 @@ nne.cv2tflite(model, input_shape, tflite_file, edgetpu=True)
 | tflite  | :white_check_mark: |
 | edge tpu  | trial  |
 | onnx| :white_check_mark: |
-| tensorRT||
+| tensorRT| :white_check_mark: |
 
 ## License
 MIT

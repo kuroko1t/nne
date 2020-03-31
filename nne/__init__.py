@@ -1,13 +1,13 @@
 import onnx
 import torch
-try:
+import tensorflow as tf
+from nne.common import *
+if check_jetson():
+    from torch2trt import torch2trt, TRTModule
+else:
+    import onnxruntime
     import onnx_tf
     from onnx_tf.backend import prepare
-    import onnxruntime
-except:
-    pass
-import tensorflow as tf
-from torch2trt import torch2trt, TRTModule
 import os
 import re
 from nne.benchmark import benchmark as bm
@@ -125,11 +125,14 @@ def infer_onnx(onnx_file, input_data, benchmark=False):
         ort_outs = ort_session.run(None, ort_inputs)
     return ort_outs[0]
 
-def infer_trt(trt_file, input_data):
+def infer_trt(trt_file, input_data, benchmark=False):
     model_trt = TRTModule()
     model_trt.load_state_dict(torch.load(trt_file))
     input_data = torch.from_numpy(input_data).cuda()
-    output = model_trt(input_data)
+    if benchmark:
+        output = bm(model_trt)(input_data)
+    else:
+        output = model_trt(input_data)
     return output.detach().cpu().numpy()
     
 def infer_tflite(tflitepath, input_data, benchmark=False):
