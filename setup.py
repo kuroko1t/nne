@@ -8,9 +8,9 @@ def check_gpu_enable():
 
 def get_requires():
     if platform.machine() == 'aarch64':
-        requires = ['onnx', 'torchvision', 'torch2trt']
+        requires = ['onnx', 'torchvision', 'torch2trt @ git+https://github.com/NVIDIA-AI-IOT/torch2trt']
     else:
-        requires = ['onnx', 'tensorflow-cpu', 'tensorflow_addons', 'onnx_tf @ git+https://github.com/onnx/onnx-tensorflow', 'torchvision', 'torch2trt']
+        requires = ['onnx', 'tensorflow-cpu', 'tensorflow_addons', 'onnx_tf @ git+https://github.com/onnx/onnx-tensorflow', 'torchvision', 'torch2trt @ git+https://github.com/NVIDIA-AI-IOT/torch2trt']
     if check_gpu_enable():
         requires += ['onnxruntime-gpu']
     else:
