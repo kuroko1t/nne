@@ -81,7 +81,7 @@ nne.cv2tflite(model, input_shape, tflite_file, edgetpu=True)
 
 ### TensorRT
 
-comvert to TensorRT
+convert to TensorRT model
 
 ```python3
 import nne
