@@ -113,7 +113,7 @@ def cv2trt(model, input_shape, trt_file, fp16_mode=False):
         dummy_input = torch.randn(input_shape, device='cuda')
     else:
         dummy_input = torch.randn(input_shape, device='cpu')
-    model_trt = torch2trt(model, [dummy_input], fp16_mode=fp16_mode)
+    model_trt = torch2trt(model, [dummy_input], fp16_mode=fp16_mode, max_batch_size=input_shape[0])
     torch.save(model_trt.state_dict(), trt_file)
 
 def infer_onnx(onnx_file, input_data, benchmark=False):
@@ -165,6 +165,7 @@ def infer_torch(model, input_data,  benchmark=False):
     model : loaded model
     input_data: numpy array
     """
+    model.eval()
     input_data = torch.from_numpy(input_data)
     if check_model_is_cuda:
         input_data = input_data.cuda()
