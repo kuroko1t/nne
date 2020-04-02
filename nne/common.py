@@ -5,3 +5,6 @@ def check_jetson():
         return True
     else:
         return False
+
+def check_model_is_cuda(model):
+    return next(model.parameters()).is_cuda
