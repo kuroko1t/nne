@@ -1,5 +1,5 @@
-import torch
 import onnx
+import torch
 from .common import *
 from .benchmark import benchmark as bm
 if not check_jetson():
