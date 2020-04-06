@@ -18,7 +18,6 @@ def cv2onnx(model, input_shape, onnx_file):
                           do_constant_folding=True,
                           input_names=[ "input" ] , output_names=['output'])
         onnx_model = onnx.load(onnx_file)
-        onnx.checker.check_model(onnx_model)
     except RuntimeError as e:
         opset_version=11
         if 'aten::upsample_bilinear2d' in e.args[0]:

@@ -2,6 +2,7 @@ import onnx
 import torch
 import tensorflow as tf
 import os
+import sys
 from .common import *
 from .benchmark import benchmark as bm
 
@@ -52,10 +53,10 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
         tflite_model = converter.convert()
     except Exception as e:
         if 'you will need custom implementations' in e.args[-1]:
-            converter.allow_custom_ops = True
             tflite_model = converter.convert()
         else:
             print('[ERR]:', e)
+            sys.exit()
 
     with open(tflite_path, 'wb') as f:
         f.write(tflite_model)
