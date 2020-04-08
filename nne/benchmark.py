@@ -41,9 +41,9 @@ class Plot:
     def __init__(self, benchmark):
         self.benchmark = benchmark
 
-    def plot(self, x, xlabl, title, savefile):
+    def plot(self, title, savefile):
         for save in self.benchmark.saves:
-            plt.plot(x, save.ave, label=save.name)
+            plt.plot(self.benchmark.counter, save.ave, label=save.name)
         plt.title(title)
         plt.legend()
         plt.xlabel('batch size')
