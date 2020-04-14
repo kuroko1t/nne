@@ -15,7 +15,8 @@ class TorchTests(unittest.TestCase):
         nne.cv2torchscript(model, input_shape, script_file)
 
         input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
-        out_script = nne.infer_torchscript(script_file, input_data)
+        model_script = nne.load_torchscript(script_file)
+        out_script = nne.infer_torchscript(model_script, input_data)
         model.eval()
         out_pytorch = model(torch.from_numpy(input_data)).detach().cpu().numpy()
         np.testing.assert_allclose(out_script, out_pytorch, rtol=1e-03, atol=1e-05)

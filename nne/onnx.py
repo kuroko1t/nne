@@ -2,6 +2,7 @@ import onnx
 import torch
 from .common import *
 from .benchmark import benchmark as bm
+import sys
 if not check_jetson():
     import onnxruntime
 
@@ -33,9 +34,15 @@ def cv2onnx(model, input_shape, onnx_file):
             print("[ERR]:",e)
     except Exception as e:
         print("[ERR]:", e)
+        sys.exit()
 
-def infer_onnx(onnx_file, input_data, benchmark=False):
+
+def load_onnx(onnx_file):
     ort_session = onnxruntime.InferenceSession(onnx_file)
+    return ort_session
+
+
+def infer_onnx(ort_session, input_data, benchmark=False):
     ort_inputs = {ort_session.get_inputs()[0].name: input_data}
     if benchmark:
         ort_outs = bm(ort_session.run)(None, ort_inputs)
