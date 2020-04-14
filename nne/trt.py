@@ -1,7 +1,6 @@
 import torch
 from torch2trt import torch2trt, TRTModule
 from .common import *
-from .benchmark import benchmark as bm
 
 def cv2trt(model, input_shape, trt_file, fp16_mode=False):
     """
@@ -25,7 +24,7 @@ def load_trt(trt_file):
 def infer_trt(model, input_data, benchmark=False, bm=None):
     input_data = torch.from_numpy(input_data).cuda()
     if bm:
-        output = bm.measure(model_trt, name='TensorRT')(input_data)
+        output = bm.measure(model, name='TensorRT')(input_data)
     else:
         output = model(input_data)
     return output.detach().cpu().numpy()
