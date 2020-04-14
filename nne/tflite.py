@@ -4,7 +4,6 @@ import tensorflow as tf
 import os
 import sys
 from .common import *
-from .benchmark import benchmark as bm
 
 def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     """
@@ -74,7 +73,7 @@ def load_tflite(tflitepath):
     return interpreter
 
 
-def infer_tflite(interpreter, input_data, benchmark=False):
+def infer_tflite(interpreter, input_data, bm=None):
     # get model input and output propaty
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
@@ -89,8 +88,8 @@ def infer_tflite(interpreter, input_data, benchmark=False):
         # get result from index of output_details
         output_data = interpreter.get_tensor(output_details[0]['index'])
         return output_data
-    if benchmark:
-        output_data = bm(execute)()
+    if bm:
+        output_data = bm.measure(execute, name='tflite')()
     else:
         output_data = execute()
     return output_data

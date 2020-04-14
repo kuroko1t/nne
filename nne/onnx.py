@@ -1,7 +1,6 @@
 import onnx
 import torch
 from .common import *
-from .benchmark import benchmark as bm
 import sys
 if not check_jetson():
     import onnxruntime
@@ -41,10 +40,10 @@ def load_onnx(onnx_file):
     return ort_session
 
 
-def infer_onnx(ort_session, input_data, benchmark=False):
+def infer_onnx(ort_session, input_data, bm=None):
     ort_inputs = {ort_session.get_inputs()[0].name: input_data}
-    if benchmark:
-        ort_outs = bm(ort_session.run)(None, ort_inputs)
+    if bm:
+        ort_outs = bm.measure(ort_session.run, name="onnx")(None, ort_inputs)
     else:
         ort_outs = ort_session.run(None, ort_inputs)
     return ort_outs[0]
