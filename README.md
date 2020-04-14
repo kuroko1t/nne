@@ -24,7 +24,7 @@ If you want to compile pytorch model for edgetpu, [install edgetpu_compiler](htt
 
 ## Example
 
-example compile pytorch model for edge device.
+example compile pytorch model for edge device. See [example](https://github.com/kuroko1t/nne/tree/master/examples) for details
 
 ### onnx
 
