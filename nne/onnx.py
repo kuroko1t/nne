@@ -1,7 +1,6 @@
 import onnx
 import torch
 from .common import *
-from .benchmark import benchmark as bm
 import sys
 if not check_jetson():
     import onnxruntime
@@ -19,7 +18,6 @@ def cv2onnx(model, input_shape, onnx_file):
                           do_constant_folding=True,
                           input_names=[ "input" ] , output_names=['output'])
         onnx_model = onnx.load(onnx_file)
-        onnx.checker.check_model(onnx_model)
     except RuntimeError as e:
         opset_version=11
         if 'aten::upsample_bilinear2d' in e.args[0]:
@@ -42,10 +40,10 @@ def load_onnx(onnx_file):
     return ort_session
 
 
-def infer_onnx(ort_session, input_data, benchmark=False):
+def infer_onnx(ort_session, input_data, bm=None):
     ort_inputs = {ort_session.get_inputs()[0].name: input_data}
-    if benchmark:
-        ort_outs = bm(ort_session.run)(None, ort_inputs)
+    if bm:
+        ort_outs = bm.measure(ort_session.run, name="onnx")(None, ort_inputs)
     else:
         ort_outs = ort_session.run(None, ort_inputs)
     return ort_outs[0]

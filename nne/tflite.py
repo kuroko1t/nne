@@ -2,8 +2,8 @@ import onnx
 import torch
 import tensorflow as tf
 import os
+import sys
 from .common import *
-from .benchmark import benchmark as bm
 
 def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     """
@@ -52,10 +52,10 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
         tflite_model = converter.convert()
     except Exception as e:
         if 'you will need custom implementations' in e.args[-1]:
-            converter.allow_custom_ops = True
             tflite_model = converter.convert()
         else:
             print('[ERR]:', e)
+            sys.exit()
 
     with open(tflite_path, 'wb') as f:
         f.write(tflite_model)
@@ -73,7 +73,7 @@ def load_tflite(tflitepath):
     return interpreter
 
 
-def infer_tflite(interpreter, input_data, benchmark=False):
+def infer_tflite(interpreter, input_data, bm=None):
     # get model input and output propaty
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
@@ -88,8 +88,8 @@ def infer_tflite(interpreter, input_data, benchmark=False):
         # get result from index of output_details
         output_data = interpreter.get_tensor(output_details[0]['index'])
         return output_data
-    if benchmark:
-        output_data = bm(execute)()
+    if bm:
+        output_data = bm.measure(execute, name='tflite')()
     else:
         output_data = execute()
     return output_data
