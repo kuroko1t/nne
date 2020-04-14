@@ -11,6 +11,8 @@ nne.cv2onnx(model, input_shape, onnx_file)
 
 input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
 
-output_data = nne.infer_onnx(onnx_file, input_data)
+onnx_model = nne.load_onnx(onnx_file)
+
+output_data = nne.infer_onnx(onnx_model, input_data)
 
 print(output_data)

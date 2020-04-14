@@ -67,11 +67,14 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
         os.system(f'edgetpu_compiler {tflite_path}')
 
 
-def infer_tflite(tflitepath, input_data, benchmark=False):
+def load_tflite(tflitepath):
     interpreter = tf.lite.Interpreter(model_path=tflitepath)
     # allocate memory
     interpreter.allocate_tensors()
+    return interpreter
 
+
+def infer_tflite(interpreter, input_data, benchmark=False):
     # get model input and output propaty
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()

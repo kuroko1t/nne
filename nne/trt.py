@@ -16,14 +16,16 @@ def cv2trt(model, input_shape, trt_file, fp16_mode=False):
     torch.save(model_trt.state_dict(), trt_file)
 
 
-def infer_trt(trt_file, input_data, bm=None):
+def load_trt(trt_file):
     model_trt = TRTModule()
-    #def load(model_trt):
     model_trt.load_state_dict(torch.load(trt_file))
-    #bm.measure(load, name='tmp')(model_trt)
+    return model_trt
+
+
+def infer_trt(model, input_data, benchmark=False, bm=None):
     input_data = torch.from_numpy(input_data).cuda()
     if bm:
         output = bm.measure(model_trt, name='TensorRT')(input_data)
     else:
-        output = model_trt(input_data)
+        output = model(input_data)
     return output.detach().cpu().numpy()
