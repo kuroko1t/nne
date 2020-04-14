@@ -12,6 +12,8 @@ nne.cv2tflite(model, input_shape, tflite_file)
 
 input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
 
-output_data = nne.infer_tflite(tflite_file, input_data)
+tflite_model = nne.load_tflite(tflite_file)
+
+output_data = nne.infer_tflite(tflite_model, input_data)
 
 print(output_data)

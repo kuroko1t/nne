@@ -11,8 +11,11 @@ def cv2torchscript(model, input_shape, script_path):
     traced = torch.jit.trace(model, dummy_input)
     traced.save(script_path)
 
-def infer_torchscript(script_path, input_data, benchmark=False):
+def load_torchscript(script_path):
     model = torch.jit.load(script_path)
+    return model
+
+def infer_torchscript(model, input_data, benchmark=False):
     input_data = torch.from_numpy(input_data)
     if check_model_is_cuda(model):
         input_data = input_data.cuda()

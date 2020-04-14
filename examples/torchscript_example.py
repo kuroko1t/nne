@@ -8,4 +8,6 @@ model = torchvision.models.resnet50(pretrained=True).cuda()
 script_file = 'resnet_script.zip'
 input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
 nne.cv2torchscript(model, input_shape, script_path)
-nne.infer_torchscript(script_path, input_data, benchmark=True)
+model_script = nne.load_torchscript(script_path)
+output = nne.infer_torchscript(model_script, input_data, benchmark=True)
+print(output)
