@@ -15,7 +15,8 @@ class OnnxTests(unittest.TestCase):
         nne.cv2onnx(model, input_shape, onnx_file)
 
         input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
-        out_onnx = nne.infer_onnx(onnx_file, input_data)
+        model_onnx = nne.load_onnx(onnx_file)
+        out_onnx = nne.infer_onnx(model_onnx, input_data)
         model.eval()
         out_pytorch = model(torch.from_numpy(input_data)).detach().cpu().numpy()
         np.testing.assert_allclose(out_onnx, out_pytorch, rtol=1e-03, atol=1e-05)
