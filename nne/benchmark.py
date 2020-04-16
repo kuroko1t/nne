@@ -2,6 +2,9 @@ import time
 import matplotlib.pyplot as plt
 
 class Benchmark:
+    """
+    This class is for measuring inference time
+    """
     def __init__(self, counter=10, name='sample'):
         self.ave = []
         self.counter = counter
@@ -26,6 +29,10 @@ class Benchmark:
 
 
 class Plot:
+    """
+    Take the Benchmark class as an argument and plot the inference time.
+    The x-axis assumes batch size.
+    """
     def __init__(self, benchmarks:list):
         self.benchmarks = benchmarks
 
