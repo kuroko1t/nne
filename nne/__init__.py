@@ -3,5 +3,5 @@ from .onnx import *
 from .torch import *
 from .torchscript import *
 from .benchmark import *
-if check_jetson():
+if check_tensorrt():
     from .trt import *
