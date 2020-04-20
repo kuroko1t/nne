@@ -30,9 +30,13 @@ def cv2onnx(model, input_shape, onnx_file):
             onnx.checker.check_model(onnx_model)
         else:
             print("[ERR]:",e)
+            sys.exit()
     except Exception as e:
         print("[ERR]:", e)
         sys.exit()
+    model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
+    if check_ok:
+        onnx.save(model_opt, onnx_file)
 
 
 def load_onnx(onnx_file):
