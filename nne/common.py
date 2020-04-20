@@ -8,7 +8,6 @@ def check_jetson():
         return False
 
 def check_tensorrt():
-    os.environ['LD_LIBRARY_PATH'] = "{os.environ['LD_LIBRARY_PATH']}:/usr/local/lib/64"
     try:
         import tensorrt
         return True
