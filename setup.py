@@ -14,9 +14,9 @@ def check_gpu_enable():
     return torch.cuda.is_available()
 
 def get_requires():
-    requires = ["onnx", "tensorflow-cpu", "tensorflow_addons", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow", "torchvision", "matplotlib", "pycuda"]
+    requires = ["onnx", "tensorflow-cpu", "tensorflow_addons", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow", "torchvision", "matplotlib"]
     if check_tensorrt():
-        requires += ["torch2trt @ git+https://github.com/NVIDIA-AI-IOT/torch2trt"]
+        requires += ["pycuda"]
     else:
         if check_gpu_enable():
             requires += ["onnxruntime-gpu"]
