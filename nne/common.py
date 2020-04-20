@@ -2,7 +2,7 @@ import platform
 import os
 
 def check_jetson():
-    if platform.machine() == 'aarch64':
+    if platform.machine() == "aarch64":
         return True
     else:
         return False
