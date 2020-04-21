@@ -10,29 +10,33 @@ def cv2onnx(model, input_shape, onnx_file):
     convert torch model to tflite model using onnx
     """
     if check_model_is_cuda(model):
-        dummy_input = torch.randn(input_shape, device='cuda')
+        dummy_input = torch.randn(input_shape, device="cuda")
     else:
-        dummy_input = torch.randn(input_shape, device='cpu')
+        dummy_input = torch.randn(input_shape, device="cpu")
     try:
         torch.onnx.export(model, dummy_input, onnx_file,
                           do_constant_folding=True,
-                          input_names=[ "input" ] , output_names=['output'])
+                          input_names=[ "input" ] , output_names=["output"])
         onnx_model = onnx.load(onnx_file)
     except RuntimeError as e:
         opset_version=11
-        if 'aten::upsample_bilinear2d' in e.args[0]:
+        if "aten::upsample_bilinear2d" in e.args[0]:
             operator_export_type = torch.onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK
             torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
-                              input_names=[ "input" ] , output_names=['output'],
+                              input_names=[ "input" ] , output_names=["output"],
                               opset_version = opset_version,
                               operator_export_type=operator_export_type)
             onnx_model = onnx.load(onnx_file)
             onnx.checker.check_model(onnx_model)
         else:
             print("[ERR]:",e)
+            sys.exit()
     except Exception as e:
         print("[ERR]:", e)
         sys.exit()
+    model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
+    if check_ok:
+        onnx.save(model_opt, onnx_file)
 
 
 def load_onnx(onnx_file):
