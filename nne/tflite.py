@@ -3,33 +3,27 @@ import torch
 import tensorflow as tf
 import os
 import sys
+import numpy as np
 from .common import *
+from .onnx import *
 
 def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     """
     convert torch model to tflite model using onnx
     """
-    if check_model_is_cuda(model):
-        dummy_input = torch.randn(input_shape, device="cuda")
-    else:
-        dummy_input = torch.randn(input_shape, device="cpu")
     tmp_onnx_path = "tmp.onnx"
     tmp_pb_path = "tmp.pb"
-    torch.onnx.export(model, dummy_input, tmp_onnx_path,
-                      do_constant_folding=True,
-                      input_names=[ "input" ] , output_names=["output"])
 
-    onnx_model = onnx.load("./tmp.onnx")
+    cv2onnx(model, input_shape, tmp_onnx_path)
+
+    onnx_model = onnx.load(tmp_onnx_path)
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
 
     os.system(f"onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}")
 
-    input_data = ""
-    if dummy_input.is_cuda:
-        input_data = dummy_input.cpu().numpy()
-    else:
-        input_data = dummy_input.numpy()
+    input_data = np.random.randn(*input_shape)
+
     train = tf.convert_to_tensor(input_data)
     my_ds = tf.data.Dataset.from_tensor_slices((train)).batch(10)
 

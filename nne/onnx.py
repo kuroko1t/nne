@@ -5,7 +5,7 @@ import sys
 if not check_jetson():
     import onnxruntime
 
-def cv2onnx(model, input_shape, onnx_file):
+def cv2onnx(model, input_shape, onnx_file, simply=False):
     """
     convert torch model to tflite model using onnx
     """
@@ -17,7 +17,6 @@ def cv2onnx(model, input_shape, onnx_file):
         torch.onnx.export(model, dummy_input, onnx_file,
                           do_constant_folding=True,
                           input_names=[ "input" ] , output_names=["output"])
-        onnx_model = onnx.load(onnx_file)
     except RuntimeError as e:
         opset_version=11
         if "aten::upsample_bilinear2d" in e.args[0]:
@@ -34,9 +33,11 @@ def cv2onnx(model, input_shape, onnx_file):
     except Exception as e:
         print("[ERR]:", e)
         sys.exit()
-    model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
-    if check_ok:
-        onnx.save(model_opt, onnx_file)
+    if simply:
+        onnx_model = onnx.load(onnx_file)
+        model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
+        if check_ok:
+            onnx.save(model_opt, onnx_file)
 
 
 def load_onnx(onnx_file):
