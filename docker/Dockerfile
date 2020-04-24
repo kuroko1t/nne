@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y tzdata
 ENV TZ=Asia/Tokyo
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    cmake python3-opencv libssl-dev tensorrt\
+    cmake python3-opencv libssl-dev wget \
     libjpeg8-dev liblapack-dev libblas-dev gfortran \
     python3 python3-pip openmpi-bin python3-dev && \
     rm -rf /var/lib/apt/lists/*
