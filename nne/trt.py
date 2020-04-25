@@ -21,32 +21,44 @@ from .common import *
 from .onnx import *
 import numpy as np
 
+TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
+
 def cv2trt(model, input_shape, trt_file, fp16_mode=False):
     """
     convert torch model to tflite model using onnx
     """
     model.eval()
-    TRT_LOGGER = trt.Logger(trt.Logger.INFO)
     onnx_file = os.path.splitext(trt_file)[0] + ".onnx"
     cv2onnx(model, input_shape, onnx_file)
     EXPLICIT_BATCH = 1
-    with trt.Builder(TRT_LOGGER) as builder, builder.create_network(EXPLICIT_BATCH) as network, trt.OnnxParser(network, TRT_LOGGER) as parser:
-        with open(onnx_file, "rb") as model:
-            parser.parse(model.read())
-        engine = builder.build_cuda_engine(network)
-        with open(trt_file, "wb") as f:
-            f.write(engine.serialize())
+    builder = trt.Builder(TRT_LOGGER)
+    network = builder.create_network(EXPLICIT_BATCH)
+    parser = trt.OnnxParser(network, TRT_LOGGER)
+    with open(onnx_file, "rb") as onnx_model:
+        parser.parse(onnx_model.read())
+    if parser.num_errors > 0:
+        error = self.parser.get_error(0)
+        raise Exception(error)
+    max_workspace_size = 1 << 28
+    max_batch_size = 32
+    builder.max_batch_size = max_batch_size
+    builder.max_workspace_size = max_workspace_size
+    builder.fp16_mode = fp16_mode
+    engine = builder.build_cuda_engine(network)
+    with open(trt_file, "wb") as f:
+        f.write(engine.serialize())
     os.remove(onnx_file)
 
 
 def load_trt(trt_file):
-    TRT_LOGGER = trt.Logger(trt.Logger.INFO)
-    with open(trt_file, "rb") as f, trt.Runtime(TRT_LOGGER) as runtime:
+    runtime = trt.Runtime(TRT_LOGGER)
+    with open(trt_file, "rb") as f:
         engine = runtime.deserialize_cuda_engine(f.read())
     return engine
 
 
 def infer_trt(engine, input_data, bm=None):
+    #outputs = engine.run(input_data)
     h_input = cuda.pagelocked_empty(trt.volume(engine.get_binding_shape(0)), dtype=np.float32)
     h_output = cuda.pagelocked_empty(trt.volume(engine.get_binding_shape(1)), dtype=np.float32)
 
