@@ -51,7 +51,6 @@ def cv2trt(model, input_shape, trt_file, fp16_mode=False):
 
 
 def load_trt(trt_file):
-    TRT_LOGGER = trt.Logger(trt.Logger.INFO)
     runtime = trt.Runtime(TRT_LOGGER)
     with open(trt_file, "rb") as f:
         engine = runtime.deserialize_cuda_engine(f.read())
