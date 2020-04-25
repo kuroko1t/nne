@@ -22,7 +22,8 @@ if not check_jetson():
 
 def cv2onnx(model, input_shape, onnx_file):
     """
-    convert torch model to tflite model using onnx
+    convert torchAttributeError: 'MobileNetV2' object has no attribute 'SerializeToString'
+ model to tflite model using onnx
     """
     if check_model_is_cuda(model):
         dummy_input = torch.randn(input_shape, device="cuda")
