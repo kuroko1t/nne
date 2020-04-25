@@ -105,4 +105,4 @@ nne.cv2trt(model, input_shape, trt_file)
 | tensorRT| :white_check_mark: |
 
 ## License
-MIT
+Apache 2.0
