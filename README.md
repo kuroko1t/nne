@@ -23,9 +23,6 @@ python -m pip install -e .
 * edgetpu
 If you want to compile pytorch model for edgetpu, [install edgetpu_compiler](https://coral.ai/docs/edgetpu/compiler/)
 
-* onnxruntime
-You can use CPU, GPU, TensorRT as the backend of onnxruntime. You need to build from source to use onnxruntime.
-
 ## Example
 
 example compile pytorch model for edge device. See [example](https://github.com/kuroko1t/nne/tree/master/examples) for details
