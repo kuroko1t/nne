@@ -37,7 +37,7 @@ def cv2trt(model, input_shape, trt_file, fp16_mode=False):
     with open(onnx_file, "rb") as onnx_model:
         parser.parse(onnx_model.read())
     if parser.num_errors > 0:
-        error = self.parser.get_error(0)
+        error = parser.get_error(0)
         raise Exception(error)
     max_workspace_size = 1 << 28
     max_batch_size = 32

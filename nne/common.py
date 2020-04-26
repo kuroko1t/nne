@@ -17,6 +17,7 @@ import platform
 import os
 import onnxsim
 
+
 def check_jetson():
     if platform.machine() == "aarch64":
         return True
