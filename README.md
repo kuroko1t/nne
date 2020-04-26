@@ -21,6 +21,7 @@ python -m pip install -e .
 ```
 
 * edgetpu
+
 If you want to compile pytorch model for edgetpu, [install edgetpu_compiler](https://coral.ai/docs/edgetpu/compiler/)
 
 ## Example
