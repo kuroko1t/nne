@@ -23,7 +23,7 @@ except:
     pass
 
 
-def cv2onnx(model, input_shape, onnx_file):
+def cv2onnx(model, input_shape, onnx_file, simplify=False):
     """
     convert torch model to tflite model using onnx
     """
@@ -53,10 +53,11 @@ def cv2onnx(model, input_shape, onnx_file):
     except Exception as e:
         print("[ERR]:", e)
         sys.exit()
-    model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
-    if check_ok:
-        print('save onnx')
-        onnx.save(model_opt, onnx_file)
+    if simplify:
+        model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
+        if check_ok:
+            print('save onnx')
+            onnx.save(model_opt, onnx_file)
 
 
 def load_onnx(onnx_file):

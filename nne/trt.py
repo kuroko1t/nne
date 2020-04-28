@@ -29,7 +29,7 @@ def cv2trt(model, input_shape, trt_file, fp16_mode=False):
     """
     model.eval()
     onnx_file = os.path.splitext(trt_file)[0] + ".onnx"
-    cv2onnx(model, input_shape, onnx_file)
+    cv2onnx(model, input_shape, onnx_file, simplify=True)
     EXPLICIT_BATCH = 1
     builder = trt.Builder(TRT_LOGGER)
     network = builder.create_network(EXPLICIT_BATCH)
