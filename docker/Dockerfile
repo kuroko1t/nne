@@ -27,22 +27,16 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0
 
 # install TensorRT
 ARG TENSORRT_VERSION=7.0.0.11
-COPY TensorRT-${TENSORRT_VERSION}.*.tar.gz .
+COPY nv-tensorrt-repo-ubuntu1804-cuda10.2-trt${TENSORRT_VERSION}-ga-20191216_1-1_amd64.deb .
 
-RUN tar -xvf TensorRT-${TENSORRT_VERSION}.*.tar.gz && \
-    cd TensorRT-${TENSORRT_VERSION}/ && \
-    cp lib/lib* /usr/lib/x86_64-linux-gnu/ && \
-    rm /usr/lib/x86_64-linux-gnu/libnv*.a && \
-    cp include/* /usr/include/x86_64-linux-gnu/ && \
-    cp bin/* /usr/bin/ && \
-    mkdir /usr/share/doc/tensorrt && \
-    cp -r doc/* /usr/share/doc/tensorrt/ && \
-    mkdir /usr/src/tensorrt && \
-    cp -r samples /usr/src/tensorrt/  && \
-    pip3 install python/tensorrt-${TENSORRT_VERSION}-cp36-none-linux_x86_64.whl && \
-    pip3 install uff/uff-*-py2.py3-none-any.whl && \
-    cd ../ && \
-    rm -rf TensorRT-${TENSORRT_VERSION}*
+RUN apt install ./nv-tensorrt-repo-ubuntu1804-cuda10.2-trt${TENSORRT_VERSION}-ga-20191216_1-1_amd64.deb&& \
+    apt-get update && \
+    apt-get install -y tensorrt && \
+    apt-get install -y python-libnvinfer-dev && \
+    apt-get install -y python3-libnvinfer-dev && \
+    apt-get install -y uff-converter-tf
+    # && \
+    #rm nv-tensorrt-repo-ubuntu1804-cuda10.1-trt${TENSORRT_VERSION}-ga-20191216_1-1_amd64.deb
 
 RUN git clone https://github.com/kuroko1t/nne.git && cd nne && python3 -m pip install -e .
 WORKDIR /nne
