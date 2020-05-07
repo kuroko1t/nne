@@ -18,6 +18,7 @@ import torch
 import tensorflow as tf
 import os
 import sys
+import subprocess
 from .common import *
 
 def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
@@ -38,7 +39,7 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
 
-    os.system(f"onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}")
+    subprocess.check_call(f"onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}", shell=True)
 
     input_data = ""
     if dummy_input.is_cuda:
@@ -78,7 +79,7 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     os.remove(tmp_pb_path)
 
     if edgetpu:
-        os.system(f"edgetpu_compiler {tflite_path}")
+        subprocess.check_call(f"edgetpu_compiler {tflite_path}", shell=True)
 
 
 def load_tflite(tflitepath):
