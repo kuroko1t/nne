@@ -41,7 +41,6 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
 
-    #subprocess.check_call(f"onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}", shell=True)
     tf_rep = prepare(onnx_model)
     tf_rep.export_graph(tmp_pb_path)
 
