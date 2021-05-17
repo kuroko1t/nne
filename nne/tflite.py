@@ -63,14 +63,9 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
         converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
         converter.inference_input_type = tf.int8
         converter.inference_output_type = tf.int8
-    try:
-        tflite_model = converter.convert()
-    except Exception as e:
-        if "you will need custom implementations" in e.args[-1]:
-            tflite_model = converter.convert()
-        else:
-            print("[ERR]:", e)
-            sys.exit()
+
+    # convert tensorflow to tflite model
+    tflite_model = converter.convert()
 
     with open(tflite_path, "wb") as f:
         f.write(tflite_model)

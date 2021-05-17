@@ -48,11 +48,9 @@ def cv2onnx(model, input_shape, onnx_file, simplify=False):
             onnx_model = onnx.load(onnx_file)
             onnx.checker.check_model(onnx_model)
         else:
-            print("[ERR]:",e)
-            sys.exit()
+            raise Exception(e)
     except Exception as e:
-        print("[ERR]:", e)
-        sys.exit()
+        raise Exception(e)
     if simplify:
         model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
         if check_ok:
