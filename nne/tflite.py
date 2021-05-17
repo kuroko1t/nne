@@ -14,9 +14,11 @@
 # =============================================================================
 
 import onnx
+from onnx_tf.backend import prepare
 import torch
 import tensorflow as tf
 import os
+import shutil
 import sys
 import subprocess
 from .common import *
@@ -39,7 +41,9 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
 
-    subprocess.check_call(f"onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}", shell=True)
+    #subprocess.check_call(f"onnx-tf convert -i {tmp_onnx_path} -o {tmp_pb_path}", shell=True)
+    tf_rep = prepare(onnx_model)
+    tf_rep.export_graph(tmp_pb_path)
 
     input_data = ""
     if dummy_input.is_cuda:
@@ -49,11 +53,7 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     train = tf.convert_to_tensor(input_data)
     my_ds = tf.data.Dataset.from_tensor_slices((train)).batch(10)
 
-    converter = tf.compat.v1.lite.TFLiteConverter.from_frozen_graph(
-        tmp_pb_path,
-        onnx_input_names,
-        onnx_output_names
-    )
+    converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_path)
     if edgetpu:
         def representative_dataset_gen():
             for input_value in my_ds.take(10):
@@ -76,7 +76,7 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     with open(tflite_path, "wb") as f:
         f.write(tflite_model)
     os.remove(tmp_onnx_path)
-    os.remove(tmp_pb_path)
+    shutil.rmtree(tmp_pb_path)
 
     if edgetpu:
         subprocess.check_call(f"edgetpu_compiler {tflite_path}", shell=True)
