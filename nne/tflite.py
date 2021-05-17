@@ -53,11 +53,6 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     train = tf.convert_to_tensor(input_data)
     my_ds = tf.data.Dataset.from_tensor_slices((train)).batch(10)
 
-    #converter = tf.compat.v1.lite.TFLiteConverter.from_frozen_graph(
-    #    tmp_pb_path,
-    #    onnx_input_names,
-    #    onnx_output_names
-    #)
     converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_path)
     if edgetpu:
         def representative_dataset_gen():
