@@ -27,36 +27,32 @@ def cv2onnx(model, input_shape, onnx_file, simplify=False):
     """
     convert torch model to tflite model using onnx
     """
-    if check_model_is_cuda(model):
-        dummy_input = torch.randn(input_shape, device="cuda")
+    if type(input_shape[0]) == tuple:
+        if check_model_is_cuda(model):
+            dummy_input = tuple([torch.randn(ishape, device="cuda") for ishape in input_shape])
+        else:
+            dummy_input = tuple([torch.randn(ishape, device="cpu") for ishape in input_shape])
+    elif type(input_shape) == tuple:
+        if check_model_is_cuda(model):
+            dummy_input = torch.randn(input_shape, device="cuda")
+        else:
+            dummy_input = torch.randn(input_shape, device="cpu")
     else:
-        dummy_input = torch.randn(input_shape, device="cpu")
+        raise Exception("input_shape must be tuple")
+
     try:
         torch.onnx.export(model, dummy_input, onnx_file,
-                          do_constant_folding=True,
                           input_names=[ "input" ] , output_names=["output"])
-        onnx_model = onnx.load(onnx_file)
-        onnx.checker.check_model(onnx_model)
     except RuntimeError as e:
-        opset_version=11
-        if "aten::upsample_bilinear2d" in e.args[0]:
-            operator_export_type = torch.onnx.OperatorExportTypes.ONNX_ATEN_FALLBACK
-            torch.onnx.export(model, dummy_input, onnx_file, verbose=True,
-                              input_names=[ "input" ] , output_names=["output"],
-                              opset_version = opset_version,
-                              operator_export_type=operator_export_type)
-            onnx_model = onnx.load(onnx_file)
-            onnx.checker.check_model(onnx_model)
-        else:
-            raise Exception(e)
-    except Exception as e:
-        raise Exception(e)
+        opset_version = 12
+        torch.onnx.export(model, dummy_input, onnx_file,
+                          opset_version=opset_version,
+                          input_names=[ "input" ] , output_names=["output"])
+
     if simplify:
         model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
         if check_ok:
-            print('save onnx')
             onnx.save(model_opt, onnx_file)
-
 
 def load_onnx(onnx_file):
     sess = onnxruntime.InferenceSession(onnx_file)

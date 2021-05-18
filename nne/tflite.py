@@ -22,38 +22,40 @@ import shutil
 import sys
 import subprocess
 from .common import *
+from .onnx import cv2onnx
+import numpy as np
 
 def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     """
     convert torch model to tflite model using onnx
     """
-    if check_model_is_cuda(model):
-        dummy_input = torch.randn(input_shape, device="cuda")
-    else:
-        dummy_input = torch.randn(input_shape, device="cpu")
-    tmp_onnx_path = "tmp.onnx"
-    tmp_pb_path = "tmp.pb"
-    torch.onnx.export(model, dummy_input, tmp_onnx_path,
-                      do_constant_folding=True,
-                      input_names=[ "input" ] , output_names=["output"])
-
-    onnx_model = onnx.load("./tmp.onnx")
+    onnx_file = "tmp.onnx"
+    tmp_pb_file = "tmp.pb"
+    cv2onnx(model, input_shape, onnx_file)
+    onnx_model = onnx.load(onnx_file)
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
 
     tf_rep = prepare(onnx_model)
-    tf_rep.export_graph(tmp_pb_path)
+    tf_rep.export_graph(tmp_pb_file)
 
-    input_data = ""
-    if dummy_input.is_cuda:
-        input_data = dummy_input.cpu().numpy()
-    else:
-        input_data = dummy_input.numpy()
-    train = tf.convert_to_tensor(input_data)
-    my_ds = tf.data.Dataset.from_tensor_slices((train)).batch(10)
+    converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_file)
 
-    converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_path)
     if edgetpu:
+        if type(input_shape[0]) == tuple:
+            if check_model_is_cuda(model):
+                dummy_input = tuple([np.randn(ishape) for ishape in input_shape])
+            else:
+                dummy_input = tuple([np.randn(ishape) for ishape in input_shape])
+        elif type(input_shape) == tuple:
+            if check_model_is_cuda(model):
+                dummy_input = np.randn(input_shape)
+            else:
+                dummy_input = np.randn(input_shape)
+        else:
+            raise Exception("input_shape must be tuple")
+        train = tf.convert_to_tensor(input_data)
+        my_ds = tf.data.Dataset.from_tensor_slices((train)).batch(10)
         def representative_dataset_gen():
             for input_value in my_ds.take(10):
                 yield [input_value]
@@ -69,8 +71,8 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
 
     with open(tflite_path, "wb") as f:
         f.write(tflite_model)
-    os.remove(tmp_onnx_path)
-    shutil.rmtree(tmp_pb_path)
+    os.remove(onnx_file)
+    shutil.rmtree(tmp_pb_file)
 
     if edgetpu:
         subprocess.check_call(f"edgetpu_compiler {tflite_path}", shell=True)
