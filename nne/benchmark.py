@@ -20,7 +20,7 @@ class Benchmark:
     """
     This class is for measuring inference time
     """
-    def __init__(self, counter=10, name="sample"):
+    def __init__(self, counter=11, name="sample"):
         self.ave = []
         self.counter = counter
         self.saves = []
@@ -33,7 +33,8 @@ class Benchmark:
                 start = time.time()
                 func(*args, **kwargs)
                 end = time.time()
-                durations.append((end - start) * 1000)
+                if i != 0:
+                    durations.append((end - start) * 1000)
             ave = sum(durations) / self.counter
             self.ave.append(ave)
             min_value = min(durations)
