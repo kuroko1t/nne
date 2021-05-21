@@ -22,11 +22,23 @@ def infer_torch(model, input_data,  bm=None):
     input_data: numpy array
     """
     model.eval()
-    input_data = torch.from_numpy(input_data)
-    if check_model_is_cuda:
-        input_data = input_data.cuda()
-    if bm:
-        output = bm.measure(model, name="torch")(input_data)
+    if type(input_data) == tuple:
+        if check_model_is_cuda(model):
+            input_data = [torch.from_numpy(data).cuda() for data in input_data]
+        else:
+            input_data = [torch.from_numpy(data) for data in input_data]
     else:
-        output = model(input_data)
+        input_data = torch.from_numpy(input_data)
+        if check_model_is_cuda(model):
+            input_data = input_data.cuda()
+    if bm:
+        if type(input_data) == list:
+            output = bm.measure(model, name="torch")(*input_data)
+        else:
+            output = bm.measure(model, name="torch")(input_data)
+    else:
+        if type(input_data) == list:
+            output = model(*input_data)
+        else:
+            output = model(input_data)
     return output.detach().cpu().numpy()

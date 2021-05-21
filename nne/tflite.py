@@ -35,10 +35,9 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     onnx_model = onnx.load(onnx_file)
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
-
     tf_rep = prepare(onnx_model)
     tf_rep.export_graph(tmp_pb_file)
-
+    
     converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_file)
 
     if edgetpu:
@@ -91,10 +90,14 @@ def infer_tflite(interpreter, input_data, bm=None):
     output_details = interpreter.get_output_details()
     ## get input shape
     #input_shape = input_details[0]["shape"]
-
+    print(input_details)
     def execute():
         # set tensor pointer to index
-        interpreter.set_tensor(input_details[0]["index"], input_data)
+        if type(input_data) == tuple:
+            for i, data in enumerate(input_data):
+                interpreter.set_tensor(input_details[i]["index"], data)
+        else:
+            interpreter.set_tensor(input_details[0]["index"], input_data)
         # execute infer
         interpreter.invoke()
         # get result from index of output_details

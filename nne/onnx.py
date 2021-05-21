@@ -50,6 +50,7 @@ def cv2onnx(model, input_shape, onnx_file, simplify=False):
                           input_names=[ "input" ] , output_names=["output"])
 
     if simplify:
+        onnx_model = load_onnx(onnx_file)
         model_opt, check_ok = onnx_simplify(onnx_model, input_shape)
         if check_ok:
             onnx.save(model_opt, onnx_file)
@@ -57,17 +58,26 @@ def cv2onnx(model, input_shape, onnx_file, simplify=False):
 def load_onnx(onnx_file):
     sess = onnxruntime.InferenceSession(onnx_file)
     if "TensorrtExecutionProvider" in sess.get_providers():
+        print("onnxmodel with TensorrtExecutionProvider")
         sess.set_providers(["TensorrtExecutionProvider"])
     elif "CUDAExecutionProvider" in sess.get_providers():
+        print("onnxmodel with CUDAExecutionProvider")
         sess.set_providers(["CUDAExecutionProvider"])
     elif "CPUExecutionProvider" in sess.get_providers():
+        print("onnxmodel with CPUExecutionProvider")
         sess.set_providers(["CPUExecutionProvider"])
-
     return sess
 
 
 def infer_onnx(sess, input_data, bm=None):
-    ort_inputs = {sess.get_inputs()[0].name: input_data}
+    if type(input_data) == tuple:
+        for i, data in enumerate(input_data):
+            if i == 0:
+                ort_inputs = {sess.get_inputs()[i].name: data}
+            else:
+                ort_inputs[sess.get_inputs()[i].name] = data
+    else:
+        ort_inputs = {sess.get_inputs()[0].name: input_data}
     if bm:
         ort_outs = bm.measure(sess.run, name="onnx")(None, ort_inputs)
     else:
