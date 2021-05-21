@@ -90,7 +90,6 @@ def infer_tflite(interpreter, input_data, bm=None):
     output_details = interpreter.get_output_details()
     ## get input shape
     #input_shape = input_details[0]["shape"]
-    print(input_details)
     def execute():
         # set tensor pointer to index
         if type(input_data) == tuple:
