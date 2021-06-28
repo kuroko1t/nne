@@ -3,6 +3,7 @@ import nne
 import torchvision
 import torch
 import numpy as np
+from nne.quant.onnx import quant_oplist, quant_summary, quantize
 
 class OnnxTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
