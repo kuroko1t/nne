@@ -20,7 +20,7 @@ import collections
 
 
 def quantize(modelpath):
-    model_quant = modelpath.replace(".onnx", "quant.onnx")
+    model_quant = modelpath.replace(".onnx", ".quant.onnx")
     quantized_model = quantize_qat(modelpath, model_quant)
 
 def quant_oplist():
