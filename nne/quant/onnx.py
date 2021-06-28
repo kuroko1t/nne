@@ -43,6 +43,6 @@ def quant_summary(quantmodel):
     for node in model.graph.node:
         if node.op_type in quant_oplist().keys():
             quant_op.append(node.op_type)
-    quant_op_counter = collections.Counter(quant_op)
+    quant_op_counter = dict(collections.Counter(quant_op))
     summary.update({"quant_op":quant_op_counter})
     return summary
