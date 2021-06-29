@@ -25,7 +25,7 @@ from .common import *
 from .onnx import cv2onnx
 import numpy as np
 
-def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
+def cv2tflite(model, input_shape, tflite_path, edgetpu=False, quantization=False):
     """
     convert torch model to tflite model using onnx
     """
@@ -37,8 +37,11 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False):
     onnx_output_names = [output.name for output in onnx_model.graph.output]
     tf_rep = prepare(onnx_model)
     tf_rep.export_graph(tmp_pb_file)
-    
+
     converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_file)
+
+    if quantization:
+        converter.optimizations = [tf.lite.optimize.DEFAULT]
 
     if edgetpu:
         if type(input_shape[0]) == tuple:
