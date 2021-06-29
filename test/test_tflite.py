@@ -21,5 +21,11 @@ class TFliteTests(unittest.TestCase):
         out_pytorch = model(torch.from_numpy(input_data)).detach().cpu().numpy()
         np.testing.assert_allclose(out_tflite, out_pytorch, rtol=1e-03, atol=1e-05)
 
+    def test_tflite_quant(self):
+        input_shape = (1, 3, 64, 64)
+        tflite_file = 'mobilenet.tflite'
+        model = torchvision.models.mobilenet_v2(pretrained=True)
+        nne.cv2tflite(model, input_shape, tflite_file, quantization=True)
+
 if __name__ == "__main__":
     unittest.main()

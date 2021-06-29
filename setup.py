@@ -23,7 +23,7 @@ def get_requires():
     if check_jetson():
         requires = ["tensorflow"]
     else:
-        requires = ["tensorflow-cpu", "tensorflow_addons"]
+        requires = ["tensorflow", "tensorflow_addons"]
     requires += ["onnx", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow", "matplotlib", "onnx-simplifier"]
     if check_tensorrt():
         requires += ["pycuda"]
