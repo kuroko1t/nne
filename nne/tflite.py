@@ -41,7 +41,7 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False, quantization=False
     converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_file)
 
     if quantization:
-        converter.optimizations = [tf.lite.optimize.DEFAULT]
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
 
     if edgetpu:
         if type(input_shape[0]) == tuple:
