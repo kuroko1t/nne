@@ -29,9 +29,17 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False, quantization=False
     """
     convert torch model to tflite model using onnx
     """
-    onnx_file = "tmp.onnx"
+    onnx_input_flag = False
+    if type(model) == str:
+        ext = ext = os.path.splitext(model)[1]
+        if ext == ".onnx":
+            onnx_input_flag = True
     tmp_pb_file = "tmp.pb"
-    cv2onnx(model, input_shape, onnx_file)
+    if not onnx_input_flag:
+        onnx_file = "tmp.onnx"
+        cv2onnx(model, input_shape, onnx_file)
+    else:
+        onnx_file = model
     onnx_model = onnx.load(onnx_file)
     onnx_input_names = [input.name for input in onnx_model.graph.input]
     onnx_output_names = [output.name for output in onnx_model.graph.output]
@@ -73,7 +81,8 @@ def cv2tflite(model, input_shape, tflite_path, edgetpu=False, quantization=False
 
     with open(tflite_path, "wb") as f:
         f.write(tflite_model)
-    os.remove(onnx_file)
+    if not onnx_input_flag:
+        os.remove(onnx_file)
     shutil.rmtree(tmp_pb_file)
 
     if edgetpu:
