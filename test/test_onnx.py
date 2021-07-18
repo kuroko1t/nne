@@ -22,6 +22,14 @@ class OnnxTests(unittest.TestCase):
         out_pytorch = model(torch.from_numpy(input_data)).detach().cpu().numpy()
         np.testing.assert_allclose(out_onnx, out_pytorch, rtol=1e-03, atol=1e-05)
 
+    def test_onnx_analyzer(self):
+        input_shape = (1, 3, 64, 64)
+        onnx_file = 'resnet.onnx'
+        model = torchvision.models.resnet34(pretrained=True)
+        nne.cv2onnx(model, input_shape, onnx_file)
+        nne.analyze(onnx_file, "")
+        nne.analyze(onnx_file, "resnet.json")
+
     def test_onnx_quant(self):
         input_shape = (1, 3, 64, 64)
         onnx_file = 'resnet.onnx'

@@ -24,13 +24,15 @@ def get_requires():
         requires = ["tensorflow"]
     else:
         requires = ["tensorflow", "tensorflow_addons"]
-    requires += ["onnx", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow", "matplotlib", "onnx-simplifier"]
+    requires += ["onnx", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow",
+                 "matplotlib", "onnx-simplifier"]
     if check_tensorrt():
         requires += ["pycuda"]
     return requires
 
 setup(
     name="nne",
+    scripts=["bin/nne-analizer"],
     packages=find_packages(),
     install_requires=get_requires(),
     version="0.1"
