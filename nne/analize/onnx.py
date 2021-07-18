@@ -89,15 +89,6 @@ class OnnxNode(object):
         self.outputs = list(node.output)
         self.node_proto = node
 
-    def translate(self, attribute):
-        attribute_trans = []
-        for attr in attribute:
-            attr_info = [(attr.name, onnx_attr_translator.get(attr.name, lambda x: x)
-                          (attribute_converted))]
-            attribute_trans.append(attr_info)
-        return dict(attribute_trans)
-
-
 def make_opsetid(domain, version):
     opsetid = OperatorSetIdProto()
     opsetid.domain = domain
