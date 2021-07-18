@@ -25,7 +25,7 @@ except:
 
 import tensorflow
 
-def cv2onnx(model, input_shape, onnx_file, simplify=False):
+def cv2onnx(model, input_shape, onnx_file, simplify=False, verbose=False):
     """
     convert torch model to tflite model using onnx
     """
@@ -44,7 +44,7 @@ def cv2onnx(model, input_shape, onnx_file, simplify=False):
 
     try:
         torch.onnx.export(model, dummy_input, onnx_file,
-                          input_names=[ "input" ] , output_names=["output"], verbose=True)
+                          input_names=[ "input" ] , output_names=["output"], verbose=verbose)
     except RuntimeError as e:
         opset_version = 12
         torch.onnx.export(model, dummy_input, onnx_file,
