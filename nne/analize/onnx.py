@@ -89,12 +89,6 @@ class OnnxNode(object):
         self.outputs = list(node.output)
         self.node_proto = node
 
-def make_opsetid(domain, version):
-    opsetid = OperatorSetIdProto()
-    opsetid.domain = domain
-    opsetid.version = version
-    return opsetid
-
 def analyze_graph(model_path, output_path):
     analyzer = Analyze(model_path, output_path)
     analyzer.summary()
