@@ -11,7 +11,7 @@ contents
   - [tflite](#tflite)
   - [tflite(edgetpu)](#tflite-edgetpu)
   - [TensorRT](#tensorrt)
-- [Summary](#Model-Summary)
+- [Model Summary](#Model-Summary)
 - [Support Format](#Support-Format)
 - [License](#License)
 
