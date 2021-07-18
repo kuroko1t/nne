@@ -115,7 +115,7 @@ OUTPUT: [[1, 1000]]
 {'Conv': 36, 'Relu': 33, 'MaxPool': 1, 'Add': 16, 'GlobalAveragePool': 1, 'Flatten': 1, 'Gemm': 1}
 ```
 
-* output detailed model information in json format.
+* dump detailed model information to json file.
 
 ```bash
 $ nne-analizer resnet.onnx -o resnet.json
