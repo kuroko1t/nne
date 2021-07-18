@@ -11,6 +11,7 @@ contents
   - [tflite](#tflite)
   - [tflite(edgetpu)](#tflite-edgetpu)
   - [TensorRT](#tensorrt)
+- [Summary](#Model-Summary)
 - [Support Format](#Support-Format)
 - [License](#License)
 
@@ -96,6 +97,30 @@ trt_file = 'alexnet_trt.pth'
 model = torchvision.models.alexnet(pretrained=True).cuda()
 nne.cv2trt(model, input_shape, trt_file)
 ```
+
+## Model Summary
+
+this script only support onnx model yet.
+
+* output summarized model information.
+
+```bash
+$ nne-analizer transformer.onnx
+
+#### SUMMARY ONNX MODEL ####
+opset: 9
+INPUT: [[1, 3, 64, 64]]
+OUTPUT: [[1, 1000]]
+--Node List-- num(89)
+{'Conv': 36, 'Relu': 33, 'MaxPool': 1, 'Add': 16, 'GlobalAveragePool': 1, 'Flatten': 1, 'Gemm': 1}
+```
+
+* output detailed model information in json format.
+
+```bash
+$ nne-analizer resnet.onnx -o resnet.json
+```
+
 
 ## Support Format
 
