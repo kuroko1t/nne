@@ -31,9 +31,6 @@ class Analyze:
             shape = list(
                 d.dim_value if (d.dim_value > 0 and d.dim_param == "") else None
                 for d in value_info.type.tensor_type.shape.dim)
-            value_info_name = value_info.name.replace(
-                ":", "_tf_") + "_" + get_unique_suffix(
-                    ) if ":" in value_info.name else value_info.name
             input_shapes.append(shape)
         return input_shapes
 
