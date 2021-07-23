@@ -13,8 +13,17 @@ class Analyze:
         self.output_shapes = self.get_output_shape(graph_def)
         self.opset_info = model.opset_import[0].version
         self.nodes = self.nodes(graph_def)
+        self.model_info = self.modelinfo()
         if output_path:
-            self.dump(output_path)
+            self.dump(self.model_info, output_path)
+
+    def modelinfo(self):
+        model_info = {}
+        model_info["OpsetVersion"] = self.opset_info
+        model_info["InputShape"] = self.input_shapes
+        model_info["OutputShape"] = self.output_shapes
+        node_dict_list = [model_info] + self.nodes2dict()
+        return node_dict_list
 
     def nodes(self, graph_def):
         return [OnnxNode(node) for node in graph_def.node]
@@ -57,12 +66,7 @@ class Analyze:
             node_dict_list.append(node_dict)
         return node_dict_list
 
-    def dump(self, output_path):
-        model_info = {}
-        model_info["OpsetVersion"] = self.opset_info
-        model_info["InputShape"] = self.input_shapes
-        model_info["OutputShape"] = self.output_shapes
-        node_dict_list = [model_info] + self.nodes2dict()
+    def dump(self, node_dict_list, output_path):
         with open(output_path, "w") as f:
             json.dump(node_dict_list, f, indent=2)
 
@@ -92,6 +96,7 @@ class OnnxNode(object):
 def analyze_graph(model_path, output_path):
     analyzer = Analyze(model_path, output_path)
     analyzer.summary()
+    return analyzer.model_info
 
 def translate_onnx(key, val):
     return onnx_attr_translator.get(key, lambda x: x)(val)

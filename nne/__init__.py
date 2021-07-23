@@ -9,9 +9,10 @@ if check_tensorrt():
     from .trt import *
 
 
-def analyze(model_path, output_path):
+def analyze(model_path, output_path=None):
     ext = os.path.splitext(model_path)[1]
     if ext == ".onnx":
-        onnx_analize.analyze_graph(model_path, output_path)
+        model_info = onnx_analize.analyze_graph(model_path, output_path)
+        return model_info
     else:
         raise Exception(f"no support {ext} file")
