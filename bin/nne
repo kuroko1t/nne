@@ -12,7 +12,7 @@ args = parser.parse_args()
 if args.simplyfy_path:
     nne.cv2onnxsimplify(args.model_path, args.simplyfy_path)
 elif args.tflite_path:
-    nne.onnx2tflite(args.model_path, args.simplyfy_path)
+    nne.onnx2tflite(args.model_path, args.tflite_path)
 elif args.analyze_path:
     nne.analyze(args.model_path, args.analyze_path)
 else:

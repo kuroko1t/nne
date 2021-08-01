@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from .convert.tflite import *
 from .convert.onnx import *
 from .convert.torchscript import *

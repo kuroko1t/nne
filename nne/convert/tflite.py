@@ -25,7 +25,8 @@ from .common import *
 from .onnx import cv2onnx
 import numpy as np
 
-def onnx2tflite(mdoel, tflite_path):
+def onnx2tflite(onnx_file, tflite_path):
+    print(onnx_file, tflite_path)
     onnx_model = onnx.load(onnx_file)
     tf_rep = prepare(onnx_model)
     tmp_pb_file = "tmp.pb"
