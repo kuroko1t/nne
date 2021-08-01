@@ -16,6 +16,7 @@
 import onnx
 import torch
 from .common import *
+from ..analyze.onnx import Analyze
 import sys
 import onnx
 try:
@@ -24,6 +25,13 @@ except:
     pass
 
 import tensorflow
+
+def cv2onnxsimplify(onnx_file, output_file):
+    analyze = Analyze(onnx_file, None)
+    onnx_model = load_onnx(onnx_file)
+    model_opt, check_ok = onnx_simplify(onnx_file, analyze.input_shapes)
+    if check_ok:
+        onnx.save(model_opt, output_file)
 
 def cv2onnx(model, input_shape, onnx_file, simplify=False, verbose=False):
     """

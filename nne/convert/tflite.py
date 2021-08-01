@@ -25,13 +25,24 @@ from .common import *
 from .onnx import cv2onnx
 import numpy as np
 
+def onnx2tflite(mdoel, tflite_path):
+    onnx_model = onnx.load(onnx_file)
+    tf_rep = prepare(onnx_model)
+    tmp_pb_file = "tmp.pb"
+    tf_rep.export_graph(tmp_pb_file)
+    converter = tf.lite.TFLiteConverter.from_saved_model(tmp_pb_file)
+    tflite_model = converter.convert()
+    shutil.rmtree(tmp_pb_file)
+    with open(tflite_path, "wb") as f:
+        f.write(tflite_model)
+
 def cv2tflite(model, input_shape, tflite_path, edgetpu=False, quantization=False):
     """
     convert torch model to tflite model using onnx
     """
     onnx_input_flag = False
     if type(model) == str:
-        ext = ext = os.path.splitext(model)[1]
+        ext = os.path.splitext(model)[1]
         if ext == ".onnx":
             onnx_input_flag = True
     tmp_pb_file = "tmp.pb"

@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+import nne
+import argparse
+
+parser = argparse.ArgumentParser(description='Neural Network Graph Analyzer')
+parser.add_argument("model_path", type=str, help="model path for analyzing")
+parser.add_argument("-a", "--analyze", type=str, help="Specify the path to output the Node information of the model in json format.")
+parser.add_argument("-s", "--simplyfy_path", type=str, help="onnx model to simplyfier")
+parser.add_argument("-t", "--tflite_path", type=str, help="onnx model to tflite")
+args = parser.parse_args()
+if args.simplyfy_path:
+    nne.cv2onnxsimplify(args.model_path, args.simplyfy_path)
+elif args.tflite_path:
+    nne.onnx2tflite(args.model_path, args.simplyfy_path)
+elif args.analyze:
+    nne.analyze(args.model_path, args.analyze)
+else:
+    nne.analyze(args.model_path, None)

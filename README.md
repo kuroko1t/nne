@@ -11,7 +11,8 @@ contents
   - [tflite](#tflite)
   - [tflite(edgetpu)](#tflite-edgetpu)
   - [TensorRT](#tensorrt)
-- [Model Summary](#Model-Summary)
+- [Script](#Script)
+  - [Model Summary](#Model-Summary)
 - [Support Format](#Support-Format)
 - [License](#License)
 
@@ -98,14 +99,38 @@ model = torchvision.models.alexnet(pretrained=True).cuda()
 nne.cv2trt(model, input_shape, trt_file)
 ```
 
-## Model Summary
+## Script
+
+* convert onnx model to tflite
+
+```bash
+$nne -h
+
+usage: nne [-h] [-a ANALYZE] [-s SIMPLYFY_PATH] [-t TFLITE_PATH] model_path
+
+Neural Network Graph Analyzer
+
+positional arguments:
+  model_path            model path for analyzing
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ANALYZE, --analyze ANALYZE
+                        Specify the path to output the Node information of the model in json format.
+  -s SIMPLYFY_PATH, --simplyfy_path SIMPLYFY_PATH
+                        onnx model to simplyfier
+  -t TFLITE_PATH, --tflite_path TFLITE_PATH
+                        onnx model to tflite
+```
+
+### Model Summary
 
 this script only support onnx model yet.
 
 * output summarized model information.
 
 ```bash
-$ nne-analizer transformer.onnx
+$ nne-analizer conv.onnx
 
 #### SUMMARY ONNX MODEL ####
 opset: 9
