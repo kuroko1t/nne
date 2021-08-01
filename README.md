@@ -12,7 +12,6 @@ contents
   - [tflite(edgetpu)](#tflite-edgetpu)
   - [TensorRT](#tensorrt)
 - [Script](#Script)
-  - [Model Summary](#Model-Summary)
 - [Support Format](#Support-Format)
 - [License](#License)
 
@@ -107,8 +106,7 @@ nne.cv2trt(model, input_shape, trt_file)
 
 ```bash
 $nne -h
-
-usage: nne [-h] [-a ANALYZE] [-s SIMPLYFY_PATH] [-t TFLITE_PATH] model_path
+usage: nne [-h] [-a ANALYZE_PATH] [-s SIMPLYFY_PATH] [-t TFLITE_PATH] model_path
 
 Neural Network Graph Analyzer
 
@@ -117,7 +115,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -a ANALYZE, --analyze ANALYZE
+  -a ANALYZE_PATH, --analyze_path ANALYZE_PATH
                         Specify the path to output the Node information of the model in json format.
   -s SIMPLYFY_PATH, --simplyfy_path SIMPLYFY_PATH
                         onnx model to simplyfier
