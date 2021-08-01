@@ -62,8 +62,12 @@ class Analyze:
             node_dict["name"] = node.name
             node_dict["op_type"] = node.op_type
             if node.attrs:
+                if "value" in node.attrs:
+                    node_attrs = node.attrs.pop("value")
+                else:
+                    node_attrs = node.attrs
                 node_dict["attrs"] = node.attrs
-            node_dict_list.append(node_dict)
+                node_dict_list.append(node_dict)
         return node_dict_list
 
     def dump(self, node_dict_list, output_path):

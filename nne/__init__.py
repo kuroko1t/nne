@@ -1,10 +1,12 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from .convert.tflite import *
 from .convert.onnx import *
 from .convert.torchscript import *
 from .benchmark import *
 from .convert.torch import *
-#from .analize.onnx import analize_graph
-from .analize import onnx as onnx_analize
+from .analyze import onnx as onnx_analyze
 if check_tensorrt():
     from .trt import *
 
@@ -12,7 +14,7 @@ if check_tensorrt():
 def analyze(model_path, output_path=None):
     ext = os.path.splitext(model_path)[1]
     if ext == ".onnx":
-        model_info = onnx_analize.analyze_graph(model_path, output_path)
+        model_info = onnx_analyze.analyze_graph(model_path, output_path)
         return model_info
     else:
         raise Exception(f"no support {ext} file")

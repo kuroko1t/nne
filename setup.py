@@ -32,7 +32,7 @@ def get_requires():
 
 setup(
     name="nne",
-    scripts=["bin/nne-analizer"],
+    scripts=["bin/nne"],
     packages=find_packages(),
     install_requires=get_requires(),
     version="0.1"
