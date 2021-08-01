@@ -101,7 +101,9 @@ nne.cv2trt(model, input_shape, trt_file)
 
 ## Script
 
-* convert onnx model to tflite
+* show summary model info
+* dump detailed model information(node name, attrs) to json file.
+* convert onnx model to tflite, simplifier
 
 ```bash
 $nne -h
@@ -122,30 +124,6 @@ optional arguments:
   -t TFLITE_PATH, --tflite_path TFLITE_PATH
                         onnx model to tflite
 ```
-
-### Model Summary
-
-this script only support onnx model yet.
-
-* output summarized model information.
-
-```bash
-$ nne-analizer conv.onnx
-
-#### SUMMARY ONNX MODEL ####
-opset: 9
-INPUT: [[1, 3, 64, 64]]
-OUTPUT: [[1, 1000]]
---Node List-- num(89)
-{'Conv': 36, 'Relu': 33, 'MaxPool': 1, 'Add': 16, 'GlobalAveragePool': 1, 'Flatten': 1, 'Gemm': 1}
-```
-
-* dump detailed model information(node name, attrs) to json file.
-
-```bash
-$ nne-analizer resnet.onnx -o resnet.json
-```
-
 
 ## Support Format
 
