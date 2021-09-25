@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-
 import onnx
 import torch
 from .common import *
@@ -33,7 +32,8 @@ def cv2onnxsimplify(onnx_file, output_file):
     if check_ok:
         onnx.save(model_opt, output_file)
 
-def cv2onnx(model, input_shape, onnx_file, simplify=False, verbose=False):
+def cv2onnx(model, input_shape, onnx_file, simplify=False, verbose=False,
+            input_names=["input"], output_names=["output"]):
     """
     convert torch model to tflite model using onnx
     """
@@ -52,12 +52,12 @@ def cv2onnx(model, input_shape, onnx_file, simplify=False, verbose=False):
 
     try:
         torch.onnx.export(model, dummy_input, onnx_file,
-                          input_names=[ "input" ] , output_names=["output"], verbose=verbose)
+                          input_names=input_names , output_names=output_names, verbose=verbose)
     except RuntimeError as e:
-        opset_version = 12
+        opset_version = 11
         torch.onnx.export(model, dummy_input, onnx_file,
                           opset_version=opset_version,
-                          input_names=[ "input" ] , output_names=["output"])
+                          input_names=input_names , output_names=output_names)
 
     if simplify:
         onnx_model = load_onnx(onnx_file)
@@ -92,4 +92,4 @@ def infer_onnx(sess, input_data, bm=None):
         ort_outs = bm.measure(sess.run, name="onnx")(None, ort_inputs)
     else:
         ort_outs = sess.run(None, ort_inputs)
-    return ort_outs[0]
+    return ort_outs
