@@ -16,11 +16,10 @@ def check_jetson():
         return False
 
 def get_requires():
-    if check_jetson():
-        requires = ["tensorflow"]
-    else:
+    requires = []
+    if not check_jetson():
         requires = ["tensorflow", "tensorflow_addons"]
-    requires += ["torch", "onnx", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow",
+    requires += ["torch", "tensorflow", "tensorflow_probability", "onnx", "onnx_tf @ git+https://github.com/onnx/onnx-tensorflow",
                  "matplotlib", "onnx-simplifier"]
     if check_tensorrt():
         requires += ["pycuda"]
