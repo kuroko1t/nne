@@ -14,9 +14,9 @@ class ScriptTests(unittest.TestCase):
         nne.cv2onnx(model, input_shape, self.onnx_file)
 
     def test_analyze(self):
-        subprocess.check_call(["nne", self.onnx_file])
-        subprocess.check_call(["nne", self.onnx_file, "-a", "resnet.json"])
+        subprocess.check_output(["nne", self.onnx_file], stderr=subprocess.STDOUT)
+        subprocess.check_output(["nne", self.onnx_file, "-a", "resnet.json"], stderr=subprocess.STDOUT)
 
     def test_convert(self):
-        subprocess.check_call(["nne", self.onnx_file, "-s", "resnet_smip.onnx"])
-        subprocess.check_call(["nne", self.onnx_file, "-t", "resnet.tflite"])
+        subprocess.check_output(["nne", self.onnx_file, "-s", "resnet_smip.onnx"], stderr=subprocess.STDOUT)
+        subprocess.check_output(["nne", self.onnx_file, "-t", "resnet.tflite"], stderr=subprocess.STDOUT)
