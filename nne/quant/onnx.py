@@ -13,7 +13,7 @@
 # limitations under the License.
 # =============================================================================
 
-from onnxruntime.quantization import quantize_qat, QuantType
+from onnxruntime.quantization import quantize_dynamic, QuantType
 from onnxruntime.quantization.registry import QLinearOpsRegistry, QDQRegistry, IntegerOpsRegistry
 import onnx
 import collections
@@ -21,7 +21,8 @@ import collections
 
 def quantize(modelpath):
     model_quant = modelpath.replace(".onnx", ".quant.onnx")
-    quantized_model = quantize_qat(modelpath, model_quant)
+    quantized_model = quantize_dynamic(modelpath, model_quant)
+
 
 def quant_oplist():
     qoplist = {}
@@ -30,19 +31,20 @@ def quant_oplist():
     qoplist.update(IntegerOpsRegistry)
     quantized_op = {}
     for v in qoplist.values():
-        quantized_op.update({v.__name__:v})
-    #quantized_opname.append("DynamicQuantizeLinear")
-    #print(qoplist)
+        quantized_op.update({v.__name__: v})
+    # quantized_opname.append("DynamicQuantizeLinear")
+    # print(qoplist)
     return quantized_op
+
 
 def quant_summary(quantmodel):
     summary = {}
     model = onnx.load(quantmodel)
     quant_op = []
-    summary.update({"opset_version":model.opset_import[-1].version})
+    summary.update({"opset_version": model.opset_import[-1].version})
     for node in model.graph.node:
         if node.op_type in quant_oplist().keys():
             quant_op.append(node.op_type)
     quant_op_counter = dict(collections.Counter(quant_op))
-    summary.update({"quant_op":quant_op_counter})
+    summary.update({"quant_op": quant_op_counter})
     return summary

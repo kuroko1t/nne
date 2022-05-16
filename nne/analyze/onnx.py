@@ -4,6 +4,7 @@ import onnx
 import json
 from onnx import defs
 
+
 class Analyze:
     def __init__(self, model_path, output_path):
         self.model_path = model_path
@@ -38,7 +39,8 @@ class Analyze:
             if value_info.name in initialized:
                 continue
             shape = list(
-                d.dim_value if (d.dim_value > 0 and d.dim_param == "") else None
+                d.dim_value if (
+                    d.dim_value > 0 and d.dim_param == "") else None
                 for d in value_info.type.tensor_type.shape.dim)
             input_shapes.append(shape)
         return input_shapes
@@ -46,12 +48,14 @@ class Analyze:
     def get_output_shape(self, graph_def):
         output_shapes = []
         for value_info in graph_def.output:
-            output_shape = [dim.dim_value for dim in value_info.type.tensor_type.shape.dim]
+            output_shape = [
+                dim.dim_value for dim in value_info.type.tensor_type.shape.dim]
             output_shapes.append(output_shape)
         return output_shapes
 
     def unique_nodes(self):
-        strip_node_names = [node.op_type for node in self.nodes]#[re.sub("_\d+", '', node.name) for node in self.nodes]
+        # [re.sub("_\d+", '', node.name) for node in self.nodes]
+        strip_node_names = [node.op_type for node in self.nodes]
         counter_nodes = collections.Counter(strip_node_names)
         return dict(counter_nodes)
 
@@ -77,12 +81,13 @@ class Analyze:
     def summary(self):
         print()
         print("#### SUMMARY ONNX MODEL ####")
-        print("opset:",self.opset_info)
+        print("opset:", self.opset_info)
         print("INPUT:", self.input_shapes)
         print("OUTPUT:", self.output_shapes)
         unique_nodes_count = self.unique_nodes()
         print(f"--Node List-- num({len(self.nodes)})")
         print(unique_nodes_count)
+
 
 class OnnxNode(object):
     def __init__(self, node):
@@ -97,13 +102,16 @@ class OnnxNode(object):
         self.outputs = list(node.output)
         self.node_proto = node
 
+
 def analyze_graph(model_path, output_path):
     analyzer = Analyze(model_path, output_path)
     analyzer.summary()
     return analyzer.model_info
 
+
 def translate_onnx(key, val):
     return onnx_attr_translator.get(key, lambda x: x)(val)
+
 
 onnx_attr_translator = {
     "axis": lambda x: int(x),
@@ -112,6 +120,7 @@ onnx_attr_translator = {
     "keepdims": lambda x: bool(x),
     "to": lambda x: x,
 }
+
 
 def convert_onnx_attribute_proto(attr_proto):
     """
