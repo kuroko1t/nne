@@ -24,6 +24,7 @@ def analyze(model_path, output_path=None):
             output_path = model_path.replace(".tflite", "_tflite.json")
         with open(output_path, 'w') as f:
             json.dump(model_info, f, indent=2, cls=tflite_analyze.NumpyEncoder)
+        print(f"Write Dump Result -> {output_path}")
         return model_info
     else:
         raise Exception(f"no support {ext} file")
